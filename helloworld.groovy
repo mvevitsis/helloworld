@@ -19,6 +19,7 @@ def mainPage() {
   }
   section("Output"){
    input "speechDevices", "capability.speechSynthesis", title: "Select a speech synthesis device", required: false, multiple: true
+   input "audioDevices", "capability.audioNotification", title: "Select audio notification devices", required: false, multiple: true
    input "sendPushMessage", "enum", title: "Send a push notification", options: ["Yes", "No"], defaultValue: "No", required: true
   }
  }
@@ -51,4 +52,15 @@ private sendMessage(evt){
     it.speak(msg)
    }
   }
+  if(audioDevices){
+  	audioDevices?.each { audioDevice -> 
+       if (audioDevice.hasCommand("playText")) { 
+             audioDevice.playText(msg)
+       } else {
+             audioDevice.playTrack(textToSpeech(msg)?.uri) 
+         }
+     }
+  
+  }
 }
+
