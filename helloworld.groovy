@@ -1,12 +1,11 @@
-
 definition(
 	name: "Hello World",
 	namespace: "mvevitsis",
 	author: "Matvei Vevitsis",
 	description: "Speak Hello World on a connected speaker when a switch is turned on",
-	category: "Convenience",
-	iconUrl: "https://s3.amazonaws.com/smartapp-icons/Partner/sonos.png",
-	iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Partner/sonos@2x.png"
+    category: "Convenience",
+    iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
+    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience%402x.png"
 )
 
 preferences {
@@ -54,10 +53,3 @@ private sendMessage(evt){
             }
         }
 }
-        
-
-
-
-       
-       
-    
