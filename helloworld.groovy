@@ -18,8 +18,7 @@ def mainPage() {
    input "mySwitch", "capability.switch", title: "Select a switch", required: false, multiple: true
   }
   section("Output"){
-   input "speechDevices", "capability.speechSynthesis", title: "Select a speech synthesis device", required: false, multiple: true
-   input "audioDevices", "capability.audioNotification", title: "Select audio notification devices", required: false, multiple: true
+   input "audioDevices", "capability.audioNotification", title: "Select a speaker", required: false, multiple: true
    input "sendPushMessage", "enum", title: "Send a push notification", options: ["Yes", "No"], defaultValue: "No", required: true
   }
  }
@@ -47,20 +46,19 @@ private sendMessage(evt){
   if(sendPushMessage == "Yes") {
      sendPush(msg)
   }
-  if(speechDevices){
-   speechDevices.each(){
-    it.speak(msg)
-   }
-  }
   if(audioDevices){
   	audioDevices?.each { audioDevice -> 
-       if (audioDevice.hasCommand("playText")) { 
+       if (audioDevice.hasCommand("playText")) { //Check if speaker supports TTS 
              audioDevice.playText(msg)
+       } else {
+       if (audioDevice.hasCommand("speak")) { //Check if speaker supports speech synthesis  
+       		 audioDevice.speak(msg)
        } else {
              audioDevice.playTrack(textToSpeech(msg)?.uri) 
          }
-     }
+       } 
   
+    }
   }
 }
 
