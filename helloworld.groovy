@@ -1,55 +1,54 @@
 definition(
-	name: "Hello World",
-	namespace: "mvevitsis",
-	author: "Matvei Vevitsis",
-	description: "Speak Hello World on a connected speaker when a switch is turned on",
-    category: "Convenience",
-    iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
-    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience%402x.png"
+  name: "Hello World",
+  namespace: "mvevitsis",
+  author: "Matvei Vevitsis", 
+  description: "Speak hello world on a connected speaker when a switch is turned on",
+  category: "Convenience",
+  iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
+  iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience%402x.png"
 )
 
 preferences {
-	page(name: "mainPage", title: "Speak Hello World on a connected speaker when a switch is turned on", install: true, uninstall: true)
-    }
+  page(name: "mainPage", title: "Speak hello world on a connected speaker when a switch is turned on", install: true, uninstall: true)
+}
 
 def mainPage() {
-	dynamicPage(name: "mainPage") {
-			section("Input"){
-            		input "mySwitch", "capability.switch", title: "Switch Turned On", required: false, multiple: true
-			}
-            section("Output"){
-            	input "speechDevices", "capability.speechSynthesis", title: "Select a speech synthesis device", required: false, multiple: true
-		    }
-	}
+ dynamicPage(name: "mainPage") {
+  section("Input"){
+   input "mySwitch", "capability.switch", title: "Select a switch", required: false, multiple: true
+  }
+  section("Output"){
+   input "speechDevices", "capability.speechSynthesis", title: "Select a speech synthesis device", required: false, multiple: true
+   input "sendPushMessage", "enum", title: "Send a push notification", options: ["Yes", "No"], defaultValue: "No", required: true
+  }
+ }
 }
 
-def installed() {
-	log.debug "Installed with settings: ${settings}"
-	subscribeToEvents()
+def installed(){
+ subscribeToEvents()
 }
 
-def updated() {
-	log.debug "Updated with settings: ${settings}"
-	unsubscribe()
-	subscribeToEvents()
+def updated(){
+ unsubscribe()
+ subscribeToEvents()
 }
 
+def subscribeToEvents(){
+ subscribe(mySwitch, "switch.on", eventHandler)
+}
 
-def subscribeToEvents() {
-	subscribe(mySwitch, "switch.on", eventHandler)
-    }
-
-def eventHandler(evt) {
-	log.debug "Notify got evt ${evt}"
-	sendMessage(evt)
-	}
-
+def eventHandler(evt){
+ sendMessage(evt)
+}
 
 private sendMessage(evt){
-	String msg = "Hello World"
-		if(speechDevices){
-        	speechDevices.each(){
-            	it.speak(msg)
-            }
-        }
+ String msg = "Hello World"
+  if(sendPushMessage == "Yes") {
+     sendPush(msg)
+  }
+  if(speechDevices){
+   speechDevices.each(){
+    it.speak(msg)
+   }
+  }
 }
