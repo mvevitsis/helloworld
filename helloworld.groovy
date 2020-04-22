@@ -23,11 +23,11 @@ def mainPage() {
   section("Input"){
    input "mySwitch", "capability.switch", title: "Select a switch", required: false, multiple: true
    input "myContact", "capability.contactSensor", title: "Select a contact sensor", required: false, multiple: true
-   href "timeNotificationInput", title: "Only during a certain time", description: getTimeLabel(notifyStarting, notifyEnding) ?: "Tap to set", state: getTimeLabel(notifyStarting, notifyEnding) ? "complete" : "incomplete"
 }
   section("Output"){
    input "audioDevices", "capability.audioNotification", title: "Select a speaker", required: false, multiple: true
    input "sendPushMessage", "enum", title: "Send a push notification", options: ["Yes", "No"], defaultValue: "No", required: true
+   href "timeNotificationInput", title: "Only during a certain time", description: getTimeLabel(notifyStarting, notifyEnding) ?: "Tap to set", state: getTimeLabel(notifyStarting, notifyEnding) ? "complete" : "incomplete"
    input "messageText", "text", title: "Message Text", defaultValue: "Hello World", required: false
   }
  }
@@ -58,12 +58,15 @@ def subscribeToEvents(){
 }
 
 def eventHandler(evt){
- sendMessage(evt)
+	if (isTimeOK(notifyStarting, notifyEnding)) {
+		sendMessage(evt)
+    } else {
+    log.debug "Not sending notifications outside configured time period."
+    }
 }
 
 private sendMessage(evt){
 def msg = messageText
-if (isTimeOK(notifyStarting, notifyEnding)) {
 	if(sendPushMessage == "Yes") {
      	sendPush(msg)
   	}
@@ -81,10 +84,8 @@ if (isTimeOK(notifyStarting, notifyEnding)) {
   
         }
    }
-} else {
-  log.debug "Not sending notifications outside configured time period."
-  }
 }
+
 private isTimeOK(starting, ending) {
 	def result = true
 	if (starting && ending) {
